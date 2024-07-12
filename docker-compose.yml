@@ -1,0 +1,22 @@
+version: '3.7'
+services:
+  db:
+    image: mysql
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: promaga
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: always
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: meu-admin
+    restart: always
+    environment:
+      PMA_HOST: db
+      PMA_POST: 3306
+    ports:
+      - "8080:80"
+volumes:
+  mysql_data:
+    driver: local

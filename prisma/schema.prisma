@@ -302,7 +302,7 @@ enum multa_estadoMulta {
   PAGO
   N_O_PAGO         @map("NÃO PAGO")
   EMPTY_ENUM_VALUE @map("")
-  EMPTY_ENUM_VALUE @map("")
+ 
 }
 
 enum pessoa_genero {

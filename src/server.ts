@@ -7,7 +7,6 @@ app.get("/", function (req:Request, res:Response) {
 })
 
 
-
 app.listen(3333, function () {
     console.log("Servir rodando na porta 3333")
 })

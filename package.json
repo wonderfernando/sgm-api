@@ -2,7 +2,7 @@
   "name": "transito",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "dev": "tsx --watch src/server.ts"
   },

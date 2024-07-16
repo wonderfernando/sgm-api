@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export const getPaíses = async (req: Request, res: Response): Promise<void> => {
+export const getPaises = async (req: Request, res: Response): Promise<void> => {
     try {
         const países = await prisma.pais.findMany({
             include: {

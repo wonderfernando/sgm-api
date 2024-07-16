@@ -306,7 +306,7 @@ enum multa_estadoMulta {
 
 enum pessoa_genero {
   Masculino
-  Feminino
+  Feminino  
 }
 
 enum pessoa_estadoCivil {

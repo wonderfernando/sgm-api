@@ -1,12 +1,20 @@
-import express, { Request, Response } from "express"
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import routas from './routes/index';  // ou o caminho correto para o arquivo de rotas
 
-const app = express()
+const app = express();
+const port = 3000;
 
-app.get("/", function (req:Request, res:Response) {
-    res.send("Olá Mundo!")
-})
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
+// Usar as rotas importadas
+app.use('/', routas);
 
-app.listen(3333, function () {
-    console.log("Servir rodando na porta 3333")
-})
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Servir rodando na porta ${PORT}`);
+});

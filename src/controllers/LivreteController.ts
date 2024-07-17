@@ -1,6 +1,7 @@
 // src/controllers/LivreteController.ts
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import {z}  from "zod";
 
 const prisma = new PrismaClient();
 
@@ -8,7 +9,6 @@ export const getLivretes = async (req: Request, res: Response): Promise<void> =>
     try {
         const livretes = await prisma.livrete.findMany({
             include: {
-                marca: true,
                 viatura: true,
                 serivicoviatura: true,
             },
@@ -25,7 +25,6 @@ export const getLivreteById = async (req: Request, res: Response): Promise<void>
         const livrete = await prisma.livrete.findUnique({
             where: { codLivrete: Number(id) },
             include: {
-                marca: true,
                 viatura: true,
                 serivicoviatura: true,
             },
@@ -41,53 +40,20 @@ export const getLivreteById = async (req: Request, res: Response): Promise<void>
     }
 };
 
+const type = z.object({
+    codViatura: z.number().min(1),
+    codServico: z.number().min(1),
+    dataEmissao: z.string(),
+    dataPrimeiroRegistro: z.string()
+})
+
 export const createLivrete = async (req: Request, res: Response): Promise<void> => {
-    const {
-        codViatura,
-        numeroQuadro,
-        corViatura,
-        MedidasPneumaticos,
-        codServico,
-        dataEmissao,
-        dataPrimeiroRegistro,
-        lotacao,
-        cilindrada,
-        numeroCilindro,
-        conbustivel,
-        peso,
-        tara,
-        tipoCaixa,
-        distanciaEixo,
-        modelo,
-        codMarca,
-    } = req.body;
+    const dados =  type.parse(req.body);
 
     try {
         const newLivrete = await prisma.livrete.create({
-            data: {
-                codViatura,
-                numeroQuadro,
-                corViatura,
-                MedidasPneumaticos,
-                codServico,
-                dataEmissao,
-                dataPrimeiroRegistro,
-                lotacao,
-                cilindrada,
-                numeroCilindro,
-                conbustivel,
-                peso,
-                tara,
-                tipoCaixa,
-                distanciaEixo,
-                modelo,
-                codMarca,
-                marca: { connect: { codMarca } },
-                viatura: { connect: { codViatura } },
-                serivicoviatura: { connect: { codServicoViatura: codServico } },
-            },
+            data: dados,
             include: {
-                marca: true,
                 viatura: true,
                 serivicoviatura: true,
             },
@@ -101,53 +67,13 @@ export const createLivrete = async (req: Request, res: Response): Promise<void> 
 
 export const updateLivrete = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
-    const {
-        codViatura,
-        numeroQuadro,
-        corViatura,
-        MedidasPneumaticos,
-        codServico,
-        dataEmissao,
-        dataPrimeiroRegistro,
-        lotacao,
-        cilindrada,
-        numeroCilindro,
-        conbustivel,
-        peso,
-        tara,
-        tipoCaixa,
-        distanciaEixo,
-        modelo,
-        codMarca,
-    } = req.body;
+    const dados =  type.parse(req.body);
 
     try {
         const updatedLivrete = await prisma.livrete.update({
             where: { codLivrete: Number(id) },
-            data: {
-                codViatura,
-                numeroQuadro,
-                corViatura,
-                MedidasPneumaticos,
-                codServico,
-                dataEmissao,
-                dataPrimeiroRegistro,
-                lotacao,
-                cilindrada,
-                numeroCilindro,
-                conbustivel,
-                peso,
-                tara,
-                tipoCaixa,
-                distanciaEixo,
-                modelo,
-                codMarca,
-                marca: { connect: { codMarca } },
-                viatura: { connect: { codViatura } },
-                serivicoviatura: { connect: { codServicoViatura: codServico } },
-            },
+            data: dados,
             include: {
-                marca: true,
                 viatura: true,
                 serivicoviatura: true,
             },

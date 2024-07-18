@@ -23,6 +23,7 @@ import { getTiposInfracao, getTipoInfracaoById, createTipoInfracao, updateTipoIn
 import { getTiposRoubo, getTipoRouboById, createTipoRoubo, updateTipoRoubo, deleteTipoRoubo } from '../controllers/TiporouboController';
 import { getTitulosPropriedade, getTituloPropriedadeById, createTituloPropriedade, updateTituloPropriedade, deleteTituloPropriedade } from '../controllers/TitulopropriedadeController';
 import { getViaturas, getViaturaById, createViatura, updateViatura, deleteViatura } from '../controllers/ViaturaController';
+import { getUsuarios, getUsuarioById, createUsuario, updateUsuario, deleteUsuario } from '../controllers/UsuarioController';
 import { login, verifyToken} from '../controllers/AutenticacaoController';
 
 const router = Router();
@@ -30,6 +31,14 @@ const router = Router();
 //Rota autenticacao
 router.get('/verifyToken', verifyToken);
 router.post('/login', login);
+
+// Rotas para Usuarios
+router.get('/usuarios', getUsuarios);
+router.get('/usuario/:id', getUsuarioById);
+router.post('/usuario', createUsuario);
+router.put('/usuario/:id', updateUsuario);
+router.delete('/usuario/:id', deleteUsuario);
+
 
 // Rotas para Alertaroubo
 router.get('/alertaroubos', getAlertasRoubo);

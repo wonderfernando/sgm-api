@@ -139,8 +139,6 @@ model infracao {
   codTipoInfracao                   Int
   multa_infracao_codMultaTomulta    multa        @relation("infracao_codMultaTomulta", fields: [codMulta], references: [codMulta], onUpdate: Restrict, map: "infracao_ibfk_1")
   tipoinfracao                      tipoinfracao @relation(fields: [codTipoInfracao], references: [codTipoInfracao], onUpdate: Restrict, map: "infracao_ibfk_2")
-  multa_multa_codInfracaoToinfracao multa[]      @relation("multa_codInfracaoToinfracao")
-
   @@index([codMulta], map: "codMulta")
   @@index([codTipoInfracao], map: "codTipoInfracao")
 }
@@ -179,18 +177,15 @@ model multa {
   codMulta                             Int               @id @default(autoincrement())
   codAutomobilista                     Int?
   CodViatura                           Int?
-  codInfracao                          Int
   valorMulta                           String            @db.VarChar(100)
   estadoMulta                          multa_estadoMulta
   infracao_infracao_codMultaTomulta    infracao[]        @relation("infracao_codMultaTomulta")
   automobilista                        automobilista?    @relation(fields: [codAutomobilista], references: [codAutomobilista], onDelete: Restrict, onUpdate: Restrict, map: "multa_ibfk_1")
-  infracao_multa_codInfracaoToinfracao infracao          @relation("multa_codInfracaoToinfracao", fields: [codInfracao], references: [codInfracao], onUpdate: Restrict, map: "multa_ibfk_2")
   viatura                              viatura?          @relation(fields: [CodViatura], references: [codViatura], onDelete: Restrict, onUpdate: Restrict, map: "multa_ibfk_3")
   pagamentomulta                       pagamentomulta[]
 
   @@index([CodViatura], map: "CodViatura")
   @@index([codAutomobilista], map: "codAutomobilista")
-  @@index([codInfracao], map: "codInfracao")
 }
 
 model municipio {

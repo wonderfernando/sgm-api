@@ -1,5 +1,5 @@
 // src/routes/index.ts
-import { Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import { getAlertasRoubo, getAlertaRouboById, createAlertaRoubo, updateAlertaRoubo, deleteAlertaRoubo } from '../controllers/AlertarouboController';
 import { getAutomobilistas, getAutomobilistaById, createAutomobilista, updateAutomobilista, deleteAutomobilista } from '../controllers/AutomobilistaController';
 import { getBis, getBiById, createBi, updateBi, deleteBi } from '../controllers/BiController';
@@ -24,9 +24,30 @@ import { getTiposRoubo, getTipoRouboById, createTipoRoubo, updateTipoRoubo, dele
 import { getTitulosPropriedade, getTituloPropriedadeById, createTituloPropriedade, updateTituloPropriedade, deleteTituloPropriedade } from '../controllers/TitulopropriedadeController';
 import { getViaturas, getViaturaById, createViatura, updateViatura, deleteViatura } from '../controllers/ViaturaController';
 import { getUsuarios, getUsuarioById, createUsuario, updateUsuario, deleteUsuario } from '../controllers/UsuarioController';
-import { login, verifyToken} from '../controllers/AutenticacaoController';
-
+import { login, verifyToken } from '../controllers/AutenticacaoController';
+import jwt from 'jsonwebtoken';
+import { z } from 'zod';
+import { db } from "../controllers/AutenticacaoController";
 const router = Router();
+
+export function tokenValidate(req: Request, res: Response, next: NextFunction) {
+    let token = req.headers.authorization
+    if (!token)
+        return res.status(401).send({ error: "Token is required" })
+
+    token = token.split(" ")[1]
+    try {
+        const decoder = jwt.verify(token, db().JWT_KEY)
+        // req.id = (decoder as data).id
+        next()
+    } catch (error) {
+        if (error instanceof jwt.TokenExpiredError) {
+            return res.status(401).send({ error: "Token is expired" })
+        }
+        return res.status(401).send({ error: "Token is invalid" })
+    }
+}
+
 
 //Rota autenticacao
 router.get('/verifyToken', verifyToken);
@@ -48,7 +69,7 @@ router.put('/alertaroubo/:id', updateAlertaRoubo);
 router.delete('/alertaroubo/:id', deleteAlertaRoubo);
 
 // Rotas para Automobilista
-router.get('/automobilistas', getAutomobilistas);
+router.get('/automobilistas', tokenValidate, getAutomobilistas);
 router.get('/automobilista/:id', getAutomobilistaById);
 router.post('/automobilista', createAutomobilista);
 router.put('/automobilista/:id', updateAutomobilista);

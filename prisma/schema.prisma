@@ -7,6 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model usuario {
+  codUsuario  Int           @id @default(autoincrement())
+  senha       String        
+  bi          String          @unique
+  numeroAgente  String         @unique
+  telefone      String          @unique
+  codPessoa     Int 
+  tipoUsuario   usuario_tipoUsuario
+  pessoa           pessoa        @relation(fields: [codPessoa], references: [codPessoa], onUpdate: Restrict, map: "usuario_ibfk_1")
+  @@index([codPessoa], map: "codPessoa")
+}
+
 model alertaroubo {
   codAlertaRoubo   Int           @id @default(autoincrement())
   codAutomobilista Int
@@ -125,23 +137,18 @@ model infracao {
   codInfracao                       Int          @id @default(autoincrement())
   codMulta                          Int
   codTipoInfracao                   Int
-  multa_infracao_codMultaTomulta    multa        @relation("infracao_codMultaTomulta", fields: [codMulta], references: [codMulta], onUpdate: Restrict, map: "infracao_ibfk_1")
+  multa    multa        @relation(fields: [codMulta], references: [codMulta], onUpdate: Restrict, map: "infracao_ibfk_1")
   tipoinfracao                      tipoinfracao @relation(fields: [codTipoInfracao], references: [codTipoInfracao], onUpdate: Restrict, map: "infracao_ibfk_2")
-  multa_multa_codInfracaoToinfracao multa[]      @relation("multa_codInfracaoToinfracao")
-
   @@index([codMulta], map: "codMulta")
   @@index([codTipoInfracao], map: "codTipoInfracao")
 }
 
-model livrete {
-  codLivrete           Int             @id @default(autoincrement())
-  codViatura           Int
+model viatura {
+  codViatura           Int             @id @default(autoincrement())
+  codMarca             Int
   numeroQuadro         String          @db.VarChar(100)
   corViatura           String          @db.VarChar(100)
   MedidasPneumaticos   String          @db.VarChar(100)
-  codServico           Int
-  dataEmissao          DateTime        @db.Date
-  dataPrimeiroRegistro DateTime        @db.Date
   lotacao              String          @db.VarChar(100)
   cilindrada           String          @db.VarChar(100)
   numeroCilindro       String          @db.VarChar(100)
@@ -151,39 +158,36 @@ model livrete {
   tipoCaixa            String          @db.VarChar(100)
   distanciaEixo        String          @db.VarChar(100)
   modelo               String          @db.VarChar(200)
-  codMarca             Int
+  numeroMatricula   String              @db.VarChar(50)
   marca                marca           @relation(fields: [codMarca], references: [codMarca], onUpdate: Restrict, map: "livrete_ibfk_1")
-  viatura              viatura         @relation(fields: [codViatura], references: [codViatura], onUpdate: Restrict, map: "livrete_ibfk_2")
-  serivicoviatura      serivicoviatura @relation(fields: [codServico], references: [codServicoViatura], onUpdate: Restrict, map: "livrete_ibfk_3")
-
+  livrete            livrete[]
+  alertaroubo       alertaroubo[]
+  multa             multa[]
+  titulopropriedade titulopropriedade[]
   @@index([codMarca], map: "codMarca")
-  @@index([codServico], map: "codServico")
-  @@index([codViatura], map: "codViatura")
 }
 
 model marca {
   codMarca  Int       @id @default(autoincrement())
   descMarca String    @db.VarChar(100)
-  livrete   livrete[]
+  viatura   viatura[]
 }
 
 model multa {
   codMulta                             Int               @id @default(autoincrement())
   codAutomobilista                     Int?
   CodViatura                           Int?
-  codInfracao                          Int
   valorMulta                           String            @db.VarChar(100)
   estadoMulta                          multa_estadoMulta
-  infracao_infracao_codMultaTomulta    infracao[]        @relation("infracao_codMultaTomulta")
+  infracao                             infracao[]        
   automobilista                        automobilista?    @relation(fields: [codAutomobilista], references: [codAutomobilista], onDelete: Restrict, onUpdate: Restrict, map: "multa_ibfk_1")
-  infracao_multa_codInfracaoToinfracao infracao          @relation("multa_codInfracaoToinfracao", fields: [codInfracao], references: [codInfracao], onUpdate: Restrict, map: "multa_ibfk_2")
   viatura                              viatura?          @relation(fields: [CodViatura], references: [codViatura], onDelete: Restrict, onUpdate: Restrict, map: "multa_ibfk_3")
   pagamentomulta                       pagamentomulta[]
 
   @@index([CodViatura], map: "CodViatura")
   @@index([codAutomobilista], map: "codAutomobilista")
-  @@index([codInfracao], map: "codInfracao")
 }
+
 
 model municipio {
   idMunicipio Int        @id @default(autoincrement())
@@ -233,6 +237,7 @@ model pessoa {
   endereco          endereco?           @relation(fields: [codEndereco], references: [idEndereco], onDelete: Restrict, onUpdate: Restrict, map: "pessoa_ibfk_2")
   pais              pais?               @relation(fields: [codNacionalidade], references: [idPais], onDelete: Restrict, onUpdate: Restrict, map: "pessoa_ibfk_3")
   bi                bi                  @relation(fields: [codBi], references: [idBi], onUpdate: Restrict, map: "pessoa_ibfk_4")
+  usuario                usuario[]
   titulopropriedade titulopropriedade[]
 
   @@index([codNacionalidade], map: "Representa onde a pessoa nasceu")
@@ -283,13 +288,16 @@ model titulopropriedade {
   @@index([codViatura], map: "codViatura")
 }
 
-model viatura {
-  codViatura        Int                 @id @default(autoincrement())
-  numeroMatricula   String              @db.VarChar(50)
-  alertaroubo       alertaroubo[]
-  livrete           livrete[]
-  multa             multa[]
-  titulopropriedade titulopropriedade[]
+model livrete {
+  codLivrete        Int                 @id @default(autoincrement())
+  codViatura        Int
+  codServico        Int
+  dataEmissao          DateTime        @db.Date
+  dataPrimeiroRegistro DateTime        @db.Date
+  viatura              viatura         @relation(fields: [codViatura], references: [codViatura], onUpdate: Restrict, map: "livrete_ibfk_2")
+  serivicoviatura      serivicoviatura @relation(fields: [codServico], references: [codServicoViatura], onUpdate: Restrict, map: "livrete_ibfk_3")
+  @@index([codServico], map: "codServico")
+  @@index([codViatura], map: "codViatura")
 }
 
 enum ficheiro_estadoValidacao {
@@ -306,7 +314,7 @@ enum multa_estadoMulta {
 
 enum pessoa_genero {
   Masculino
-  Feminino
+  Feminino  
 }
 
 enum pessoa_estadoCivil {
@@ -314,4 +322,10 @@ enum pessoa_estadoCivil {
   Casado
   Solteira
   Casada
+}
+
+enum usuario_tipoUsuario {
+  Transito
+  Automobilista
+  Admin  
 }

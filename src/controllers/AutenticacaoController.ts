@@ -20,10 +20,10 @@ export async function login(req: Request, res: Response) {
                     bi: { equals: user.bi as string }
                 },
                 {
-                    telefone: { equals: user.telefone as string }
+                    telefone: { equals: user.bi as string }
                 },
                 {
-                    numeroAgente: { equals: user.numeroAgente as string }
+                    numeroAgente: { equals: user.bi as string }
                 }
             ]
         },
@@ -32,11 +32,13 @@ export async function login(req: Request, res: Response) {
         },
     });
     if (newUser) {
-        const passVerify = await bcrypt.compare(user.senha, newUser.senha)
+        console.log(req.body)
+        const passVerify = await bcrypt.compare(user.password, newUser.senha)
         if (passVerify) {
             const payload = { login: user.bi, tipo: user.tipoUsuario }
             console.log("Logado!!!!!!!!!!")
             const token = jwt.sign(payload, db().JWT_KEY, { expiresIn: '1h' })
+            console.log(token)
             return res.json({ token, newUser }).status(200)
         }
         else
@@ -44,9 +46,7 @@ export async function login(req: Request, res: Response) {
     }
     else
         return res.json({ error: "usuario Não encontrado ", user }).status(403)
-
 }
-
 
 export function verifyToken(req: Request, res: Response) {
     const decor = jwt.verify(req.body.token, db().JWT_KEY, (err: any, decoded: any) => {

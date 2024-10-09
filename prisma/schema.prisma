@@ -178,12 +178,13 @@ model multa {
   codAutomobilista                     Int?
   CodViatura                           Int?
   valorMulta                           String            @db.VarChar(100)
+  descMulta                            String           @default("") @db.Text
   estadoMulta                          multa_estadoMulta
   infracao                             infracao[]        
   automobilista                        automobilista?    @relation(fields: [codAutomobilista], references: [codAutomobilista], onDelete: Restrict, onUpdate: Restrict, map: "multa_ibfk_1")
   viatura                              viatura?          @relation(fields: [CodViatura], references: [codViatura], onDelete: Restrict, onUpdate: Restrict, map: "multa_ibfk_3")
   pagamentomulta                       pagamentomulta[]
-
+  data                               DateTime @default(now())          @db.Date
   @@index([CodViatura], map: "CodViatura")
   @@index([codAutomobilista], map: "codAutomobilista")
 }

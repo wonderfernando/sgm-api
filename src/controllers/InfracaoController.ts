@@ -7,9 +7,8 @@ const prisma = new PrismaClient();
 export const getInfracoes = async (req: Request, res: Response): Promise<void> => {
     const infracoes = await prisma.infracao.findMany({
         include: {
-            multa_infracao_codMultaTomulta: true,
-            tipoinfracao: true,
-            multa_multa_codInfracaoToinfracao: true
+            multa: true,
+            tipoinfracao: true
         }
     });
     res.status(200).json(infracoes);
@@ -19,9 +18,8 @@ export const getInfracaoById = async (req: Request, res: Response): Promise<void
     const infracao = await prisma.infracao.findUnique({
         where: { codInfracao: Number(req.params.id) },
         include: {
-            multa_infracao_codMultaTomulta: true,
-            tipoinfracao: true,
-            multa_multa_codInfracaoToinfracao: true
+            multa: true,
+            tipoinfracao: true
         }
     });
 

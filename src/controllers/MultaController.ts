@@ -11,8 +11,12 @@ export const getMultas = async (req: Request, res: Response): Promise<void> => {
                 automobilista: true,
                 viatura: true,
                 pagamentomulta: true,
-                infracao_infracao_codMultaTomulta: true,
-                infracao_multa_codInfracaoToinfracao: true,
+                infracao: {
+                    include: {
+                        tipoinfracao: true
+                    }
+                },
+                
             },
         });
         res.status(200).json(multas);
@@ -30,8 +34,11 @@ export const getMultaById = async (req: Request, res: Response): Promise<void> =
                 automobilista: true,
                 viatura: true,
                 pagamentomulta: true,
-                infracao_infracao_codMultaTomulta: true,
-                infracao_multa_codInfracaoToinfracao: true,
+                infracao:  {
+                    include:{
+                        tipoinfracao: true
+                    }
+                },
             },
         });
 
@@ -49,30 +56,32 @@ export const createMulta = async (req: Request, res: Response): Promise<void> =>
     const {
         codAutomobilista,
         codViatura,
-        codInfracao,
         valorMulta,
-        estadoMulta,
+        descricao,
+        infracoes
     } = req.body;
-
+console.log(req.body);
     try {
         const newMulta = await prisma.multa.create({
             data: {
                 codAutomobilista: codAutomobilista ? Number(codAutomobilista) : undefined,
                 CodViatura: codViatura ? Number(codViatura) : undefined,
-                codInfracao,
-                valorMulta,
-                estadoMulta,
+                valorMulta : valorMulta.toString(),
+                descMulta: descricao,
+                estadoMulta : "PENDENTE",
+                infracao: {
+                    create: infracoes.map((infra:any) => ({
+                        codTipoInfracao: infra.codTipoInfracao
+                    }))
+                }
             },
             include: {
-                automobilista: true,
-                viatura: true,
-                pagamentomulta: true,
-                infracao_infracao_codMultaTomulta: true,
-                infracao_multa_codInfracaoToinfracao: true,
-            },
+                    infracao:  true
+                }
         });
         res.status(201).json(newMulta);
     } catch (error) {
+        console.log(error);
         res.status(500).json({ error: 'Não foi possível criar a multa' });
     }
 };

@@ -9,7 +9,15 @@ export const getAutomobilistas = async (req: Request, res: Response): Promise<vo
         include: {
             alertaroubo: true,
             cartaconducao: true,
-            pessoa: true,
+            pessoa: {
+                include: {
+                    contacto: true,
+                    endereco: true,
+                    pais: true,
+                    bi: true,
+                    titulopropriedade: true
+                }
+            },
             multa: true
         }
     });
@@ -22,8 +30,25 @@ export const getAutomobilistaById = async (req: Request, res: Response): Promise
         include: {
             alertaroubo: true,
             cartaconducao: true,
-            pessoa: true,
-            multa: true
+            pessoa: {
+                include: {
+                    contacto: true,
+                    endereco: true,
+                    pais: true,
+                    bi: true,
+                    titulopropriedade: true
+                }
+            },
+            multa: {
+                include: {
+                    infracao: {
+                        include:{
+                            tipoinfracao: true
+                        }
+                    },
+                    pagamentomulta: true
+                }
+            }
         }
     });
 

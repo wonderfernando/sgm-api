@@ -19,6 +19,7 @@ export const getPessoas = async (req: Request, res: Response): Promise<void> => 
         });
         res.status(200).json(pessoas);
     } catch (error) {
+        console.log(error)
         res.status(500).json({ error: 'Não foi possível buscar as pessoas' });
     }
 };
